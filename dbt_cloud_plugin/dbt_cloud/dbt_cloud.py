@@ -36,8 +36,12 @@ class DbtCloud(object):
         else:
             raise RuntimeError(response.content)
 
-    def list_jobs(self):
-        return self._get('/accounts/%s/jobs/' % self.account_id).get('data')
+    def list_jobs(self, environment_id=None):
+        jobs = self._get('/accounts/%s/jobs/' % self.account_id).get('data')
+        if environment_id is not None:
+            return [j for j in jobs if j['environment_id'] == environment_id]
+        else:
+            return jobs
 
     def get_run(self, run_id):
         return self._get('/accounts/%s/runs/%s/' % (self.account_id, run_id)).get('data')
@@ -56,8 +60,8 @@ class DbtCloud(object):
 
         raise RuntimeError("Too many failures ({}) while querying for run status".format(run_id))
 
-    def run_job(self, job_name, data=None):
-        jobs = self.list_jobs()
+    def run_job(self, job_name, data=None, environment_id=None):
+        jobs = self.list_jobs(environment_id=environment_id)
 
         job_matches = [j for j in jobs if j['name'] == job_name]
 
