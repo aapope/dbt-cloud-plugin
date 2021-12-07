@@ -42,7 +42,7 @@ class DbtCloud(object):
     def list_jobs(self, environment_id=None):
         jobs = self._get('/accounts/%s/jobs/' % self.account_id).get('data')
         if environment_id is not None:
-            return [j for j in jobs if j['environment_id'] == environment_id]
+            return [j for j in jobs if str(j['environment_id']) == str(environment_id)]
         else:
             return jobs
 
