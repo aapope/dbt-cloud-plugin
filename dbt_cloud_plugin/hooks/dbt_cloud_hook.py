@@ -46,6 +46,7 @@ class DbtCloudHook(BaseHook):
 
     def _get_conn_extra(self):
         conn = self.get_connection(self.dbt_cloud_conn_id).extra_dejson
+        print(f'conn {conn}')
         config = {}
         if 'git_branch' in conn:
             config['git_branch'] = conn['git_branch']
@@ -72,6 +73,7 @@ class DbtCloudHook(BaseHook):
                 target_name_override=None, steps_override=None, environment_id=None):
         dbt_cloud = self.get_conn()
         extra = self._get_conn_extra()
+        print(f'hook extra {extra}')
 
         data = {'cause': 'Kicked off via Airflow'}
         # add optional settings
@@ -86,6 +88,7 @@ class DbtCloudHook(BaseHook):
 
         # get environment
         environment_id = environment_id or extra.get('environment_id', None)
+        print(f'hook env {environment_id}')
 
         self.log.info(f'Triggering job {job_name} with data {data}')
 

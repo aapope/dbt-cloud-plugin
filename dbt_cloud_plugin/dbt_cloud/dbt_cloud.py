@@ -64,6 +64,7 @@ class DbtCloud(object):
         raise RuntimeError("Too many failures ({}) while querying for run status".format(run_id))
 
     def run_job(self, job_name, data=None, environment_id=None):
+        print(f'run_job {environment_id}')
         jobs = self.list_jobs(environment_id=environment_id)
 
         job_matches = [j for j in jobs if j['name'] == job_name]
