@@ -14,7 +14,7 @@ SUCCESSFUL_STATUSES = ['success', 'pass']
 
 class DbtCloudCheckModelResultOperator(BaseOperator):
 
-    template_fields = ['run_id']
+    template_fields = ['dbt_cloud_run_id']
 
     @apply_defaults
     def __init__(self, dbt_cloud_conn_id=None, dbt_cloud_run_id=None, model_names=None, ensure_models_ran=True, *args, **kwargs):
