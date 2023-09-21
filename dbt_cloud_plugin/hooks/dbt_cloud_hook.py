@@ -77,8 +77,8 @@ class DbtCloudHook(BaseHook):
 
     def get_all_run_results(self, run_id):
         """
-        Return the run_results.json from a dbt Cloud run, concatenated
-        across all (real) steps.
+        Return the results array from run_results.json from a dbt Cloud run,
+        concatenated across all (real) steps.
         """
         dbt_cloud = self.get_conn()
 
@@ -97,7 +97,7 @@ class DbtCloudHook(BaseHook):
         all_run_results = []
         for step in range(starting_step, starting_step + total_steps):
             run_results = dbt_cloud.get_artifact(run_id, 'run_results.json', step=step)
-            all_run_results.extend(run_results)
+            all_run_results.extend(run_results['results'])
 
         return all_run_results
 
