@@ -18,7 +18,7 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self, dbt_cloud_conn_id=None, dbt_cloud_run_id=None, model_names=None, ensure_models_ran=True, *args, **kwargs):
-        super(DbtCloudCheckJobResultOperator, self).__init__(*args, **kwargs)
+        super(DbtCloudCheckModelResultOperator, self).__init__(*args, **kwargs)
 
         if dbt_cloud_conn_id is None:
             raise AirflowException('No valid dbt Cloud connection ID was supplied.')
