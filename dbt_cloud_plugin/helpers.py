@@ -1,4 +1,4 @@
-from ..operators.dbt_cloud_check_model_result_operator import DbtCloudCheckModelResultOperator
+from .operators.dbt_cloud_check_model_result_operator import DbtCloudCheckModelResultOperator
 
 
 def generate_dbt_model_dependency(dbt_job_task, downstream_tasks, dependent_models):
