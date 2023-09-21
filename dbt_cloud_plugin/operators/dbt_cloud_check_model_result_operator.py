@@ -64,7 +64,7 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
                 if result['status'] not in SUCCESSFUL_STATUSES:
                     raise Exception(f'Dependency {result["unique_id"]} did not pass, status: {result["status"]}!')
 
-        if not ran_model and ensure_models_ran:
+        if not ran_model and self.ensure_models_ran:
             raise Exception(f'Model {model_id} was not run!')
 
     def execute(self, **kwargs):
