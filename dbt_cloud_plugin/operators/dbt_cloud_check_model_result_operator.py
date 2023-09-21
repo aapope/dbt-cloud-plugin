@@ -57,7 +57,7 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
         self.log.info(f'Checking all dependencies for {model_name}: {all_dependencies}')
 
         ran_model = False
-        for result in run_results:
+        for result in run_results['results']:
             if result['unique_id'] == model_id:
                 ran_model = True
             if result['unique_id'] in all_dependencies:
