@@ -1,1 +1,1 @@
-from helpers import generate_dbt_model_dependency
+from .helpers import generate_dbt_model_dependency
