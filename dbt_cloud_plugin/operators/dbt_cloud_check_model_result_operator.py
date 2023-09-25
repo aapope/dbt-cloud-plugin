@@ -12,6 +12,18 @@ from ..hooks.dbt_cloud_hook import DbtCloudHook
 SUCCESSFUL_STATUSES = ['success', 'pass']
 
 
+class DbtModelException(Exception):
+    pass
+
+
+class DbtModelFailedException(DbtModelException):
+    pass
+
+
+class DbtModelNotRunException(DbtModelException):
+    pass
+
+
 class DbtCloudCheckModelResultOperator(BaseOperator):
 
     template_fields = ['dbt_cloud_run_id']
@@ -62,10 +74,10 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
                 ran_model = True
             if result['unique_id'] in all_dependencies:
                 if result['status'] not in SUCCESSFUL_STATUSES:
-                    raise Exception(f'Dependency {result["unique_id"]} did not pass, status: {result["status"]}!')
+                    raise DbtModelFailedException(f'Dependency {result["unique_id"]} did not pass, status: {result["status"]}!')
 
         if not ran_model and self.ensure_models_ran:
-            raise Exception(f'Model {model_id} was not run!')
+            raise DbtModelNotRunException(f'Model {model_id} was not run!')
 
     def execute(self, **kwargs):
         dbt_cloud_hook = DbtCloudHook(dbt_cloud_conn_id=self.dbt_cloud_conn_id)
