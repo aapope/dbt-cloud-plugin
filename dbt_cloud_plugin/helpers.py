@@ -1,9 +1,13 @@
+from airflow.utils.task_group import TaskGroup
+
 from .operators.dbt_cloud_check_model_result_operator import DbtCloudCheckModelResultOperator
 
 
 def generate_dbt_model_dependency(dbt_job_task, downstream_tasks, dependent_models, ensure_models_ran=True):
     if isinstance(downstream_tasks, list):
         task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{len(downstream_tasks)}_downstream'
+    elif isinstance(downstream_tasks, TaskGroup):
+        task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_tasks.group_id}'
     else:
         task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_tasks.task_id}'
     
