@@ -25,6 +25,30 @@ class DbtModelNotRunException(DbtModelException):
 
 
 class DbtCloudCheckModelResultOperator(BaseOperator):
+    """
+    Check the results of a dbt Cloud job to see whether the model(s) you
+    care about ran successfully. Useful if you have a large dbt Cloud job,
+    but each of your downstream tasks only requires a small subset of models
+    to succeed.
+
+    :param dbt_cloud_conn_id: dbt Cloud connection ID
+    :type dbt_cloud_conn_id: str
+    :param dbt_cloud_run_id: Run ID of a finished dbt Cloud job. Note that
+        this task must not start running until the dbt Cloud job has completed,
+        otherwise it will error out. See DbtCloudRunAndWatchJobOperator or
+        DbtCloudRunSensor.
+    :type dbt_cloud_run_id: str or int
+    :param model_names: A single model name or list of model names to check.
+        Tests and snapshot names also work. Note this must be the /name/, not the
+        node ID. In addition to the model name(s) supplied, all of the tests for
+        that model will also be checked (though unlike the model itself, they need
+        not have been run).
+    :type model_names: str or list[str]
+    :param ensure_models_ran: Whether to ensure all of the model_names were actually
+        executed in this run. Defaults to True to avoid accidentally mistyping the
+        model name, negating the value of this check.
+    :type ensure_models_ran: bool, default True
+    """
 
     template_fields = ['dbt_cloud_run_id']
 
