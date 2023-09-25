@@ -5,7 +5,7 @@ def generate_dbt_model_dependency(dbt_job_task, downstream_tasks, dependent_mode
     if isinstance(downstream_tasks, list):
         task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{len(downstream_tasks)}_downstream'
     else:
-        task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_task.task_id}'
+        task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_tasks.task_id}'
     
     check_dbt_model_results = DbtCloudCheckModelResultOperator(
         task_id=task_id,
@@ -17,4 +17,4 @@ def generate_dbt_model_dependency(dbt_job_task, downstream_tasks, dependent_mode
         retries=0
     )
 
-    return dbt_job_task >> check_dbt_model_results >> downstream_task
+    return dbt_job_task >> check_dbt_model_results >> downstream_tasks
