@@ -30,7 +30,7 @@ class TestGenerateDbtModelDependency(unittest.TestCase):
                 result = task
         
         # Verify the generated dependencies
-        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__task1')
+        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__model1__model2')
         self.assertIsInstance(result, DbtCloudCheckModelResultOperator)
         self.assertEqual(result.dbt_cloud_conn_id, dbt_job_task.dbt_cloud_conn_id)
         self.assertEqual(result.ensure_models_ran, True)
@@ -58,7 +58,7 @@ class TestGenerateDbtModelDependency(unittest.TestCase):
                 result = task
         
         # Verify the generated dependencies
-        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__2_downstream')
+        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__model1__model2')
         self.assertIsInstance(result, DbtCloudCheckModelResultOperator)
         self.assertEqual(result.dbt_cloud_conn_id, dbt_job_task.dbt_cloud_conn_id)
         self.assertEqual(result.ensure_models_ran, True)
@@ -88,7 +88,7 @@ class TestGenerateDbtModelDependency(unittest.TestCase):
                 result = task
 
         # Verify the generated dependencies
-        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__task_group_name')
+        self.assertEqual(result.task_id, 'check_dbt_model_results__dbt_job_task__model1__model2')
         self.assertEqual(result.dbt_cloud_conn_id, dbt_job_task.dbt_cloud_conn_id)
         self.assertEqual(result.ensure_models_ran, False)
         self.assertEqual(result.trigger_rule, 'all_done')

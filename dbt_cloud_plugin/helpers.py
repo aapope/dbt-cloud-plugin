@@ -29,22 +29,20 @@ def generate_dbt_model_dependency(dbt_job_task, downstream_tasks, dependent_mode
     if not isinstance(dbt_job_task, DbtCloudRunJobOperator):
         raise TypeError('dbt_job_task must be of type DbtCloudRunJobOperator or DbtCloudRunAndWatchOperator')
     
-    
     if isinstance(downstream_tasks, list):
         if len(downstream_tasks) == 0:
             raise ValueError('You must pass at least one task in downstream_tasks')
-
-        if isinstance(downstream_tasks[0], BaseOperator) or isinstance(downstream_tasks[0], TaskGroup):
-            task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{len(downstream_tasks)}_downstream'
-        else:
+        if not (isinstance(downstream_tasks[0], BaseOperator) or isinstance(downstream_tasks[0], TaskGroup)):
             raise TypeError('The elements of the downstream_tasks list must be of type BaseOperator or TaskGRoup')
-    elif isinstance(downstream_tasks, TaskGroup):
-        task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_tasks.group_id}'
-    elif isinstance(downstream_tasks,BaseOperator):
-        task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{downstream_tasks.task_id}'
-    else:
+    elif not (isinstance(downstream_tasks, TaskGroup) or isinstance(downstream_tasks, BaseOperator)):
         raise TypeError('downstream_tasks must be of one of the following types: BaseOperator, TaskGroup, or a list of one of those two')
-    
+
+    if isinstance(dependent_models, str):
+        dependent_models = [dependent_models]
+    model_ids = '__'.join(dependent_models)
+    task_id = f'check_dbt_model_results__{dbt_job_task.task_id}__{model_ids}'
+    task_id = task_id[:255]
+
     check_dbt_model_results = DbtCloudCheckModelResultOperator(
         task_id=task_id,
         dbt_cloud_conn_id=dbt_job_task.dbt_cloud_conn_id,
