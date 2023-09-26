@@ -13,15 +13,6 @@ class TestDbtCloudCheckModelResultOperator(unittest.TestCase):
             model_names=['model1', 'model2'],
         )
 
-    def test_init_with_invalid_conn_id(self):
-        with self.assertRaises(AirflowException):
-            DbtCloudCheckModelResultOperator(
-                task_id='test_task',
-                dbt_cloud_conn_id=None,
-                dbt_cloud_run_id='run_id',
-                model_names=['model1'],
-            )
-
     def test_init_with_invalid_run_id(self):
         with self.assertRaises(AirflowException):
             DbtCloudCheckModelResultOperator(

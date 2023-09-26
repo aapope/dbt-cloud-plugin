@@ -31,8 +31,6 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
     but each of your downstream tasks only requires a small subset of models
     to succeed.
 
-    :param dbt_cloud_conn_id: dbt Cloud connection ID
-    :type dbt_cloud_conn_id: str
     :param dbt_cloud_run_id: Run ID of a finished dbt Cloud job. Note that
         this task must not start running until the dbt Cloud job has completed,
         otherwise it will error out. See DbtCloudRunAndWatchJobOperator or
@@ -44,6 +42,8 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
         that model will also be checked (though unlike the model itself, they need
         not have been run).
     :type model_names: str or list[str]
+    :param dbt_cloud_conn_id: dbt Cloud connection ID
+    :type dbt_cloud_conn_id: str
     :param ensure_models_ran: Whether to ensure all of the model_names were actually
         executed in this run. Defaults to True to avoid accidentally mistyping the
         model name, negating the value of this check.
@@ -53,11 +53,9 @@ class DbtCloudCheckModelResultOperator(BaseOperator):
     template_fields = ['dbt_cloud_run_id']
 
     @apply_defaults
-    def __init__(self, dbt_cloud_conn_id=None, dbt_cloud_run_id=None, model_names=None, ensure_models_ran=True, *args, **kwargs):
+    def __init__(self, dbt_cloud_run_id=None, model_names=None, ensure_models_ran=True, dbt_cloud_conn_id='dbt_default', *args, **kwargs):
         super(DbtCloudCheckModelResultOperator, self).__init__(*args, **kwargs)
 
-        if dbt_cloud_conn_id is None:
-            raise AirflowException('No valid dbt Cloud connection ID was supplied.')
         if dbt_cloud_run_id is None:
             raise AirflowException('No dbt Cloud run_id was supplied.')
         if model_names is None:
