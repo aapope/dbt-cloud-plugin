@@ -1,3 +1,5 @@
+import time
+
 from ..dbt_cloud.dbt_cloud import DbtCloud
 from airflow.hooks.base_hook import BaseHook
 from airflow.exceptions import AirflowException
@@ -91,13 +93,22 @@ class DbtCloudHook(BaseHook):
             job = dbt_cloud.get_job(job_id)
             total_steps = len(job['execute_steps'])
             
-        # the first 3 steps of a dbt Cloud job are always the same and
-        # never have any run results
+        # the first 3 steps of a dbt Cloud job are always the same and never have any run results
+        # occasionally, the run_results.json file can take a few seconds to generate
         starting_step = 4
-        all_run_results = []
-        for step in range(starting_step, starting_step + total_steps):
-            run_results = dbt_cloud.get_artifact(run_id, 'run_results.json', step=step)
-            all_run_results.extend(run_results['results'])
+        attempts = 0
+        while attempts < 3:
+            all_run_results = [] 
+            try:
+                for step in range(starting_step, starting_step + total_steps):
+                    run_results = dbt_cloud.get_artifact(run_id, 'run_results.json', step=step)
+                    all_run_results.extend(run_results['results'])
+                break
+            except RuntimeError as e:
+                attempts += 1
+                if attempts == 3:
+                    raise e
+                time.sleep(15)
 
         return all_run_results
 

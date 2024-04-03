@@ -72,8 +72,9 @@ class DbtCloudRunAndWatchJobOperator(DbtCloudRunJobOperator):
             manifest = dbt_cloud_hook.get_run_manifest(run_id=run_id)
 
             errors = {}
-            fail_states = {result['unique_id'] for result in run_results if result['status'] in ['error', 'failure']}
+            fail_states = {result['unique_id'] for result in run_results if result['status'] in ['error', 'failure', 'fail']}
             for unique_id in fail_states:
+                self.log.info(manifest['nodes'][unique_id]['tags'])
                 errors[unique_id] = {
                     'tags': manifest['nodes'][unique_id]['tags'], 
                     'resource_type': manifest['nodes'][unique_id]['resource_type'],
