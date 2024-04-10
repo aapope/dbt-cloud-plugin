@@ -73,19 +73,24 @@ class DbtCloudRunAndWatchJobOperator(DbtCloudRunJobOperator):
 
             errors = {}
             fail_states = {result['unique_id'] for result in run_results if result['status'] in ['error', 'failure', 'fail']}
+
             for unique_id in fail_states:
+                tags = manifest['nodes'][unique_id]['tags']
+                resource_type = manifest['nodes'][unique_id]['resource_type']
+                depends_on = manifest['nodes'][unique_id]['depends_on']['nodes']
+                parent_models = {model: manifest['nodes'][model]['tags'] for model in manifest['nodes'][unique_id]['depends_on']['nodes'] if model not in manifest['sources']}
                 errors[unique_id] = {
-                    'tags': manifest['nodes'][unique_id]['tags'], 
-                    'resource_type': manifest['nodes'][unique_id]['resource_type'],
-                    'depends_on': manifest['nodes'][unique_id]['depends_on']['nodes'],
-                    'parent_models': {model: manifest['nodes'][model]['tags'] for model in manifest['nodes'][unique_id]['depends_on']['nodes']}
+                    'tags': tags,
+                    'resource_type': resource_type,
+                    'depends_on': depends_on,
+                    'parent_models': parent_models,
                 }
 
             raise DbtCloudRunException(
                 dbt_cloud_run_id=run_id,
                 dbt_cloud_account_id=self.account_id,
                 dbt_cloud_project_id=self.project_id,
-                error_message=f'dbt cloud Run ID {run_id} Failed.', 
+                error_message=f'dbt cloud Run ID {run_id} Failed.',
                 dbt_errors_dict=errors
             )
             
