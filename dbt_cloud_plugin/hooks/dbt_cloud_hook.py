@@ -106,8 +106,11 @@ class DbtCloudHook(BaseHook):
                 break
             except RuntimeError as e:
                 attempts += 1
-                if attempts == 3:
+                if attempts == 3 and step == starting_step:
                     raise e
+                elif attempts == 3:
+                    total_steps = step - starting_step
+                    attempts = 0
                 time.sleep(15)
 
         return all_run_results
