@@ -95,21 +95,27 @@ class DbtCloudHook(BaseHook):
             
         # the first 3 steps of a dbt Cloud job are always the same and never have any run results
         # occasionally, the run_results.json file can take a few seconds to generate
-        starting_step = 4
+        current_index = 4
+        final_index = current_index + total_steps
         attempts = 0
-        all_run_results = [] 
+        all_run_results = []
+
         while attempts < 3:
             try:
-                for step in range(starting_step, starting_step + total_steps):
+                for step in range(current_index, final_index):
                     run_results = dbt_cloud.get_artifact(run_id, 'run_results.json', step=step)
                     all_run_results.extend(run_results['results'])
+                    current_index += 1
                 break
             except RuntimeError as e:
                 attempts += 1
+
                 if attempts == 3 and len(all_run_results) == 0:
                     raise e
                 elif attempts == 3:
+                    # sometimes the last step is not available, so we need to return what we have
                     return all_run_results
+                
                 time.sleep(15)
 
         return all_run_results
