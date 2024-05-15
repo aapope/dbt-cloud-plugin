@@ -97,8 +97,8 @@ class DbtCloudHook(BaseHook):
         # occasionally, the run_results.json file can take a few seconds to generate
         starting_step = 4
         attempts = 0
+        all_run_results = [] 
         while attempts < 3:
-            all_run_results = [] 
             try:
                 for step in range(starting_step, starting_step + total_steps):
                     run_results = dbt_cloud.get_artifact(run_id, 'run_results.json', step=step)
@@ -106,11 +106,10 @@ class DbtCloudHook(BaseHook):
                 break
             except RuntimeError as e:
                 attempts += 1
-                if attempts == 3 and step == starting_step:
+                if attempts == 3 and len(all_run_results) == 0:
                     raise e
                 elif attempts == 3:
-                    total_steps = step - starting_step
-                    attempts = 0
+                    return all_run_results
                 time.sleep(15)
 
         return all_run_results
