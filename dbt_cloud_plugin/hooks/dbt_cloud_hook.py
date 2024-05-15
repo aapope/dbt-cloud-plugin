@@ -1,4 +1,5 @@
 import time
+import warnings
 
 from ..dbt_cloud.dbt_cloud import DbtCloud
 from airflow.hooks.base_hook import BaseHook
@@ -114,6 +115,7 @@ class DbtCloudHook(BaseHook):
                     raise e
                 elif attempts == 3:
                     # sometimes the last step is not available, so we need to return what we have
+                    warnings.warn(f'Only {len(all_run_results)} of {total_steps} steps were available in run_results.json')
                     return all_run_results
                 
                 time.sleep(15)
