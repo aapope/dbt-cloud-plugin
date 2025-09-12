@@ -61,7 +61,12 @@ class DbtCloudRunAndWatchJobOperator(DbtCloudRunJobOperator):
     def poke(self, run_id):
         self.log.info('Sensor checking state of dbt cloud run ID: %s', run_id)
         dbt_cloud_hook = DbtCloudHook(dbt_cloud_conn_id=self.dbt_cloud_conn_id)
-        run_status = dbt_cloud_hook.get_run_status(run_id=run_id)
+        try:
+            run_status = dbt_cloud_hook.get_run_status(run_id=run_id)
+        except Exception as e:
+            # Tolerate transient connectivity errors during polling; keep the job alive
+            self.log.warning('Transient error while fetching run status for %s: %s', run_id, str(e))
+            return False
         self.log.info('State of Run ID {}: {}'.format(run_id, run_status))
 
         if run_status.strip() == 'Cancelled':
