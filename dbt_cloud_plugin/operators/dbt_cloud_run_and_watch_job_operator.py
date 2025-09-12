@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import time
+import requests
 
 from airflow.utils.decorators import apply_defaults
 from airflow.exceptions import AirflowException, AirflowSkipException
@@ -63,9 +64,9 @@ class DbtCloudRunAndWatchJobOperator(DbtCloudRunJobOperator):
         dbt_cloud_hook = DbtCloudHook(dbt_cloud_conn_id=self.dbt_cloud_conn_id)
         try:
             run_status = dbt_cloud_hook.get_run_status(run_id=run_id)
-        except Exception as e:
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
             # Tolerate transient connectivity errors during polling; keep the job alive
-            self.log.warning('Transient error while fetching run status for %s: %s', run_id, str(e))
+            self.log.warning('Transient network error while fetching run status for %s: %s', run_id, str(e))
             return False
         self.log.info('State of Run ID {}: {}'.format(run_id, run_status))
 
